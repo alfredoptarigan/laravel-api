@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum', 'role:super admin'])->group(function () {
     Route::get('/admin/histories', [AdminController::class, 'histories']);
+    Route::get('/admin/find-histories', [AdminController::class, 'findHistories']);
     Route::put('/admin/edit-post', [AdminController::class, 'editPost']);
     Route::delete('/admin/delete-post', [AdminController::class, 'deletePost']);
 });

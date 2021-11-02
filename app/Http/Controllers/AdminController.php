@@ -22,6 +22,40 @@ class AdminController extends Controller
         return APIResponse::SuccessResponse($responseSuccess, 200);
     }
 
+
+    public function findHistories(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'case' => 'required'
+        ]);
+
+        switch ($request->case) {
+            case 'ip_address':
+                $histories = History::where('ip_address', $request->filter)->get();
+                $responseSuccess = $this->response(
+                    "Success get history by IP Address",
+                    $histories
+                );
+                return APIResponse::SuccessResponse($responseSuccess, 200);
+                break;
+
+            case 'user_id':
+                $histories = History::where('user_id', $request->filter)->get();
+                $responseSuccess = $this->response(
+                    "Success get history by User ID",
+                    $histories
+                );
+                return APIResponse::SuccessResponse($responseSuccess, 200);
+                break;
+
+            default:
+                $responseNotFound =  $this->response("System cannot found case you want, please read the docs", []);
+                return APIResponse::SuccessResponse($responseNotFound, 404);
+                break;
+        }
+    }
+
+
     public function deletePost(Request $request)
     {
         $validate = Validator::make($request->all(), [
