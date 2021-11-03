@@ -8,23 +8,17 @@ use App\Utils\APIResponse;
 use App\Traits\APITraits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HistoryTrait;
 
 class PostController extends Controller
 {
-    use APITraits;
-
-
-    protected function privilege($checkID, $userID)
-    {
-        if ($checkID != $userID) {
-        }
-    }
+    use APITraits, HistoryTrait;
 
     public function index()
     {
-        $posts = Post::with('user')->get();
+        $posts = Post::with(['user', 'tags'])->get();
         $response = $this->response('Success', [
-            'posts' => $posts
+            'posts' => $posts,
         ]);
 
         return APIResponse::SuccessResponse($response);
@@ -34,7 +28,8 @@ class PostController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'title' => 'required|string',
-            'description' => 'required|string'
+            'description' => 'required|string',
+            'tag_id' => 'exists:tags,id'
         ]);
 
         if ($validate->fails()) {
@@ -44,9 +39,14 @@ class PostController extends Controller
 
         $post = Post::create(array_merge($validate->validate(), ['user_id' => $request->user()->id]));
 
+        $post->tags()->attach($validate->validate()['tag_id']);
+
         $responseSuccesful = $this->response(
             'Successfully Publish Post',
-            ['post' => $post]
+            [
+                'post' => $post,
+                'history' => $this->postHistoryUser($request,  "menambahkan post dengan judul ", $post->title)
+            ]
         );
 
         return APIResponse::SuccessResponse($responseSuccesful, 200);

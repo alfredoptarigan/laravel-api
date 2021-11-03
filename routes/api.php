@@ -5,8 +5,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\TagController;
 use Spatie\Permission\Traits\HasRoles;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,6 +28,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/post', [PostController::class, 'post']);
     Route::delete('/post', [PostController::class, 'delete']);
     Route::put('/post', [PostController::class, 'edit']);
+
+    Route::get('/tag', [TagController::class, 'index']);
+    Route::post('/tag', [TagController::class, 'create']);
+    Route::post('/tag/post', [TagController::class, 'addTagToPost']);
 });
 
 Route::middleware(['auth:sanctum', 'role:super admin'])->group(function () {
